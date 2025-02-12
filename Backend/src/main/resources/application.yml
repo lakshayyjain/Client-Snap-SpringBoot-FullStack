@@ -1,0 +1,23 @@
+server:
+  port: 8080
+  error:
+    include-message: always
+
+
+spring:
+  datasource:
+    url: jdbc:postgresql://localhost:5332/customer
+    username: postgres
+    password: jainlakshay
+  jpa:
+    open-in-view : false
+    hibernate:
+      ddl-auto: update
+    properties:
+      hibernate:
+        format_sql: true
+    show-sql: true
+#    open-in-view: true
+
+  main:
+    web-application-type: servlet

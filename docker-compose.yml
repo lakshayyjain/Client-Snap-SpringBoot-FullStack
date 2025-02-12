@@ -1,0 +1,35 @@
+services:
+  db:
+    container_name: postgres
+    image: postgres
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: jainlakshay
+      PGDATA: /data/postgres
+    volumes:
+      - db:/data/postgres
+    ports:
+      - "5332:5432"
+    networks:
+      - db
+    restart: unless-stopped
+
+  lakshay-api:
+    container_name: lakshay-api
+    image: lakshayyjain/lakshayjain-api
+    ports:
+      - "8088:8080"
+    networks:
+      - db
+    depends_on:
+      - db
+    restart: unless-stopped
+    command:
+      - --spring.datasource.url=jdbc:postgresql://db:5432/customer
+
+networks:
+  db:
+    driver: bridge
+
+volumes:
+  db:
