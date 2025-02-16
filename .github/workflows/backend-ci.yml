@@ -1,4 +1,4 @@
-name: "CI - Build Backend"
+name: CI - Build Backend
 
 on:
   pull_request:
@@ -12,7 +12,7 @@ jobs:
     runs-on: ubuntu-latest
     services:
       postgres:
-        image: postgres
+        image: postgres:17.2
         env:
           POSTGRES_USER: postgres
           POSTGRES_PASSWORD: jainlakshay
@@ -39,9 +39,9 @@ jobs:
 
       # Optional: Add a wait if the database isn't ready yet.
 
-      - name: Wait for PostgreSQL to be ready
-        run: |
-          until pg_isready -h localhost -p 5332 -U postgres; do
-            echo "Waiting for PostgreSQL..."
-            sleep 5
-          done
+#      - name: Wait for PostgreSQL to be ready
+#        run: |
+#          until pg_isready -h localhost -p 5332 -U postgres; do
+#            echo "Waiting for PostgreSQL..."
+#            sleep 5
+#          done
