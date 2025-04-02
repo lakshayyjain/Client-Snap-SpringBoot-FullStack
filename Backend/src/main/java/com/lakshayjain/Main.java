@@ -17,12 +17,10 @@ import java.util.Random;
 @SpringBootApplication
 public class Main {
     public static void main(String[] args) {
-
         //   NEVER DO THIS
 //
 //        CustomerService customerService = new CustomerService(new CustomerDataAccessService());
 //        CustomerController customerController = new CustomerController(customerService);
-
 //        ConfigurableApplicationContext context =
                 SpringApplication.run(Main.class, args);
 
