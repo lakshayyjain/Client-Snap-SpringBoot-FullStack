@@ -9,7 +9,7 @@ import java.util.Optional;
 @Repository("list")
 public class CustomerListDataAccessService implements CustomerDao{
 
-    private static List<Customer> customers;
+    private static final List<Customer> customers;
 
     static {
 
@@ -18,7 +18,8 @@ public class CustomerListDataAccessService implements CustomerDao{
                 1,
                 "Lakshay",
                 "lakshayjain312@gmail.com",
-                19
+                19,
+                Gender.MALE
         );
         customers.add(lakshay);
 
@@ -26,7 +27,8 @@ public class CustomerListDataAccessService implements CustomerDao{
                 2,
                 "Akshat Jain",
                 "akshat123@gmail.com",
-                18
+                18,
+                Gender.MALE
         );
         customers.add(akshat);
     }

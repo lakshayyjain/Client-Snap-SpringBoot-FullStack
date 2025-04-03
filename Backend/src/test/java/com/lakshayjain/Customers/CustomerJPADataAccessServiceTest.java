@@ -52,7 +52,8 @@ class CustomerJPADataAccessServiceTest {
         Customer customer = new Customer(
              "lakshay",
              "lakshay@gmail.com",
-             20
+             20,
+                Gender.MALE
         );
 
         // WHEN
@@ -104,7 +105,8 @@ class CustomerJPADataAccessServiceTest {
         Customer customer = new Customer(
                 "lakshay",
                 "lakshay@gmail.com",
-                20
+                20,
+                Gender.MALE
         );
 
         // WHEN

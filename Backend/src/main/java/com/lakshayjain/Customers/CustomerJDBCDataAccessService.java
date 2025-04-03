@@ -3,6 +3,7 @@ package com.lakshayjain.Customers;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
 
+import java.sql.Types;
 import java.util.List;
 import java.util.Optional;
 
@@ -20,7 +21,7 @@ public class CustomerJDBCDataAccessService implements CustomerDao{
     @Override
     public List<Customer> selectAllCustomer() {
         var sql = """
-                SELECT id, name, email, age FROM customer
+                SELECT id, name, email, age, gender FROM customer
                 """;
 
         return jdbcTemplate.query(sql, customerRowMapper);
@@ -29,7 +30,7 @@ public class CustomerJDBCDataAccessService implements CustomerDao{
     @Override
     public Optional<Customer> selectCustomer(Integer id) {
         var sql = """
-                SELECT id, name, email, age FROM customer
+                SELECT id, name, email, age, gender FROM customer
                 WHERE id = ?
                 """;
         // we should not do this when we have sql queries with us ::
@@ -44,13 +45,23 @@ public class CustomerJDBCDataAccessService implements CustomerDao{
     @Override
     public void insertCustomer(Customer customer) {
         var sql = """
-                INSERT INTO customer(name, email, age)
-                VALUES(?,?,?)
+                INSERT INTO customer(name, email, age, gender)
+                VALUES(?,?,?,?)
                 """;
-        int result = jdbcTemplate.update(sql,
-                customer.getName(),
-                customer.getEmail(),
-                customer.getAge()
+        int result = jdbcTemplate.update(
+                sql,
+                new Object[]{
+                        customer.getName(),
+                        customer.getEmail(),
+                        customer.getAge(),
+                        customer.getGender().name()  // explicit string representation of enum
+                },
+                new int[]{
+                        Types.VARCHAR,  // name
+                        Types.VARCHAR,  // email
+                        Types.INTEGER,  // age
+                        Types.VARCHAR   // gender explicitly specified as VARCHAR
+                }
         );
 
         System.out.println("jdbcTemplate.update = " + result); // this will give the number of rows in our DATABASE
@@ -90,8 +101,25 @@ public class CustomerJDBCDataAccessService implements CustomerDao{
     @Override
     public void updateCustomer(Customer update) {
         var sql = """
-                UPDATE customer SET name = ?, email = ?, age = ? WHERE id = ?
+                UPDATE customer SET name = ?, email = ?, age = ?, gender = ? WHERE id = ?
                 """;
-        jdbcTemplate.update(sql,update.getName(),update.getEmail(),update.getAge(),update.getId());
+        jdbcTemplate.update(
+                sql,
+                new Object[]{
+                        update.getName(),
+                        update.getEmail(),
+                        update.getAge(),
+                        update.getGender().name(),  // explicitly convert enum to string
+                        update.getId()
+                },
+                new int[]{
+                        Types.VARCHAR,
+                        Types.VARCHAR,
+                        Types.INTEGER,
+                        Types.VARCHAR, // explicit type for enum
+                        Types.INTEGER
+                }
+        );
+
     }
 }

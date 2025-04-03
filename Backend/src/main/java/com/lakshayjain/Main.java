@@ -4,6 +4,7 @@ import com.github.javafaker.Faker;
 import com.github.javafaker.Name;
 import com.lakshayjain.Customers.Customer;
 import com.lakshayjain.Customers.CustomerRepository;
+import com.lakshayjain.Customers.Gender;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -40,7 +41,8 @@ public class Main {
             Customer customer = new Customer(
                     firstName + " " + lastName,
                     firstName.toLowerCase() + "." + lastName.toLowerCase() + "@gmail.com",
-                    random.nextInt(16,99)
+                    random.nextInt(16,99),
+                    random.nextBoolean() ? Gender.MALE : Gender.FEMALE
             );
             customerRepository.save(customer);
         };
