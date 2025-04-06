@@ -20,3 +20,13 @@ export const saveCustomer = async (customer) => {
         throw e;
     }
 };
+
+export const deleteCustomer = async (id) => {
+    // eslint-disable-next-line no-useless-catch
+    try{
+        return await axios.delete(`${import.meta.env.VITE_API_BASE_URL}/api/v1/customers/${id}`);
+    }
+    catch (e){
+        throw e;
+    }
+};
