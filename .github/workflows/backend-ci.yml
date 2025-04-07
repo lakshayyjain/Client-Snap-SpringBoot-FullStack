@@ -12,7 +12,7 @@ jobs:
     runs-on: ubuntu-latest
     services:
       postgres:
-        image: postgres:17.2
+        image: postgres
         env:
           POSTGRES_USER: postgres
           POSTGRES_PASSWORD: jainlakshay
@@ -24,6 +24,7 @@ jobs:
           --health-interval 10s
           --health-timeout 5s
           --health-retries 5
+
     defaults:
       run:
         working-directory: ./backend
@@ -31,17 +32,8 @@ jobs:
       - uses: actions/checkout@v4
       - uses: actions/setup-java@v4
         with:
-          distribution: 'temurin'
+          distribution: 'oracle'
           java-version: '17'
           cache: 'maven'
       - name: Build and run Unit/Integration Tests with Maven
         run: mvn -ntp -B verify
-
-      # Optional: Add a wait if the database isn't ready yet.
-
-#      - name: Wait for PostgreSQL to be ready
-#        run: |
-#          until pg_isready -h localhost -p 5332 -U postgres; do
-#            echo "Waiting for PostgreSQL..."
-#            sleep 5
-#          done
