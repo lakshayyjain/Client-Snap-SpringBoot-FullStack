@@ -24,11 +24,8 @@ public class Main {
 //        CustomerController customerController = new CustomerController(customerService);
 //        ConfigurableApplicationContext context =
                 SpringApplication.run(Main.class, args);
-
 //        printAllBeans(context);
-
     }
-
     @Bean
     CommandLineRunner runner(CustomerRepository customerRepository) {
 
