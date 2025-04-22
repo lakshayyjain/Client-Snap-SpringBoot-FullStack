@@ -21,7 +21,7 @@ public class CustomerJDBCDataAccessService implements CustomerDao{
     @Override
     public List<Customer> selectAllCustomer() {
         var sql = """
-                SELECT id, name, email, age, gender FROM customer
+                SELECT id, name, email, password, age, gender FROM customer
                 """;
 
         return jdbcTemplate.query(sql, customerRowMapper);
@@ -30,7 +30,7 @@ public class CustomerJDBCDataAccessService implements CustomerDao{
     @Override
     public Optional<Customer> selectCustomer(Integer id) {
         var sql = """
-                SELECT id, name, email, age, gender FROM customer
+                SELECT id, name, email, password, age, gender FROM customer
                 WHERE id = ?
                 """;
         // we should not do this when we have sql queries with us ::
@@ -45,20 +45,22 @@ public class CustomerJDBCDataAccessService implements CustomerDao{
     @Override
     public void insertCustomer(Customer customer) {
         var sql = """
-                INSERT INTO customer(name, email, age, gender)
-                VALUES(?,?,?,?)
+                INSERT INTO customer(name, email, password, age, gender)
+                VALUES(?,?,?,?,?)
                 """;
         int result = jdbcTemplate.update(
                 sql,
                 new Object[]{
                         customer.getName(),
                         customer.getEmail(),
+                        customer.getPassword(),
                         customer.getAge(),
                         customer.getGender().name()  // explicit string representation of enum
                 },
                 new int[]{
                         Types.VARCHAR,  // name
                         Types.VARCHAR,  // email
+                        Types.VARCHAR,
                         Types.INTEGER,  // age
                         Types.VARCHAR   // gender explicitly specified as VARCHAR
                 }
@@ -122,4 +124,21 @@ public class CustomerJDBCDataAccessService implements CustomerDao{
         );
 
     }
+
+    @Override
+    public Optional<Customer> selectCustomerByEmail(String email) {
+        var sql = """
+                SELECT id, name, email, password, age, gender FROM customer
+                WHERE email = ?
+                """;
+        // we should not do this when we have sql queries with us ::
+//        for(Customer customer : jdbcTemplate.query(sql, customerRowMapper)){
+//            if(customer.getId().equals(id)){
+//                return Optional.of(customer);
+//            }
+//        }
+        return jdbcTemplate.query(sql,customerRowMapper, email)
+                .stream()
+                .findFirst();    }
+
 }

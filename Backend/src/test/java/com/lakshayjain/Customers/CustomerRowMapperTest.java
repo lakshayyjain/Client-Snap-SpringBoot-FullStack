@@ -1,13 +1,11 @@
 package com.lakshayjain.Customers;
 
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -30,7 +28,7 @@ class CustomerRowMapperTest {
 
         // THEN
         Customer expected = new Customer(
-                1, "lakshay", "lakshayjain@gmail.com", 20, Gender.MALE
+                1, "lakshay", "lakshayjain@gmail.com", "password", 20, Gender.MALE
         );
 
         assertThat(actualCustomer).isEqualTo(expected);
