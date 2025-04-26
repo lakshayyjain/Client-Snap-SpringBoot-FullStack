@@ -8,25 +8,32 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class CustomerService {
 
     private final CustomerDao customerDao;
+    private final CustomerDTOMapper customerDTOMapper;
     private final PasswordEncoder passwordEncoder;
 
-    public CustomerService(@Qualifier("jdbc") CustomerDao customerDao,
+    public CustomerService(@Qualifier("jdbc") CustomerDao customerDao, CustomerDTOMapper customerDTOMapper,
                            PasswordEncoder passwordEncoder) {
         this.customerDao = customerDao;
+        this.customerDTOMapper = customerDTOMapper;
         this.passwordEncoder = passwordEncoder;
     }
 
-    public List<Customer> getAllCustomers(){
-        return customerDao.selectAllCustomer();
+    public List<CustomerDTO> getAllCustomers(){
+        return customerDao.selectAllCustomer()
+                .stream()
+                .map(customerDTOMapper)
+                .collect(Collectors.toList());
     }
 
-    public Customer getCustomerById(Integer id){
-        return customerDao.selectCustomer(id).orElseThrow(
+    public CustomerDTO getCustomerById(Integer id){
+        return customerDao.selectCustomer(id)
+                .map(customerDTOMapper).orElseThrow(
                 () -> new RecordNotFoundException("Customer not found")
         );
     }
@@ -61,7 +68,10 @@ public class CustomerService {
 
     public void updateCustomer(Integer customerId, CustomerUpdateRequest updateRequest) {
         //  ToDo: for JPA use .getReferenceById(customerID)  as it does doe
-        Customer customer = getCustomerById(customerId);
+        Customer customer = customerDao.selectCustomer(customerId)
+                .orElseThrow(
+                        () -> new RecordNotFoundException("Customer not found")
+                );;
 //        String age = Integer.toString(updateRequest.age());
         boolean changes = false;
 
