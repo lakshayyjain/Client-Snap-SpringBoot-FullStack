@@ -30,7 +30,8 @@ import {
     FiSettings,
     FiUsers
 } from 'react-icons/fi';
-import logo from '../../assets/logo.png'
+import logo from '../../assets/ea706112-14df-4feb-a3a2-1a7b87af4929-removebg-preview.png'
+import {useAuth} from "@/components/Context/AuthContext.jsx";
 // import {useAuth} from "../context/AuthContext.jsx";
 
 const LinkItems = [
@@ -80,14 +81,15 @@ const SidebarContent = ({onClose, ...rest}) => {
             h="full"
             {...rest}>
             <Flex h="20" flexDirection="column" alignItems="center" mx="8" mb={79} mt={3} justifyContent="space-between">
-                <Text fontSize="2xl" fontFamily="monospace" fontWeight="bold" mb={3}>
+                <Text fontSize="2xl" fontFamily="monospace" fontWeight="bold" mb={1}>
                     Dashboard
                 </Text>
                 <Image
                     borderRadius='full'
-                    boxSize='130px'
+                    boxSize='100px'
                     src={logo}
                     alt='Lakshay'
+                    // mb={20}
                 />
                 <CloseButton display={{base: 'flex', md: 'none'}} onClick={onClose}/>
             </Flex>
@@ -134,6 +136,7 @@ const NavItem = ({icon, route, children, ...rest}) => {
 // Removed: import { useAuth } from "../context/AuthContext.jsx";
 
 const MobileNav = ({ onOpen, ...rest }) => {
+    const {logout, customer} = useAuth();
     return (
         <Flex
             ml={{ base: 0, md: 60 }}
@@ -161,7 +164,7 @@ const MobileNav = ({ onOpen, ...rest }) => {
                 Dashboard
             </Text>
 
-            <HStack spacing={{ base: '0', md: '6' }}>
+            <HStack spacing={{ base: '0', md: '6' }} w="full" justifyContent="flex-end">
                 <IconButton size="lg" variant="ghost" aria-label="open menu" icon={<FiBell />} />
                 <Flex alignItems={'center'}>
                     <Menu>
@@ -173,8 +176,12 @@ const MobileNav = ({ onOpen, ...rest }) => {
                                     alignItems="flex-start"
                                     spacing="1px"
                                     ml="2">
-                                    <Text fontSize="sm">Guest</Text> {/* Replaced customer reference */}
-                                    <Text fontSize="xs" color="gray.600">Visitor</Text>
+                                    <Text fontSize="sm">{customer?.username}</Text>
+                                    {customer?.roles.map((role, id) => (
+                                            <Text key={id} fontSize="xs" color="gray.600">
+                                            {role}
+                                        </Text>
+                                    ))}
                                 </VStack>
                                 <Box display={{ base: 'none', md: 'flex' }}>
                                     <FiChevronDown />
@@ -187,7 +194,7 @@ const MobileNav = ({ onOpen, ...rest }) => {
                             <MenuItem>Profile</MenuItem>
                             <MenuItem>Settings</MenuItem>
                             <MenuDivider />
-                            <MenuItem>Sign out</MenuItem> {/* Removed logOut call for now */}
+                            <MenuItem onClick={logout}>Sign out</MenuItem> {/* Removed logOut call for now */}
                         </MenuList>
                     </Menu>
                 </Flex>

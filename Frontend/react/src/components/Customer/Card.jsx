@@ -99,7 +99,7 @@ export default function CardWithImage({id, name, email, age, gender, fetchCustom
                                         </Button>
                                         <Button colorScheme='red' onClick={ () => {
                                             deleteCustomer(id).then((res) => {
-                                                console.log(res);
+                                                // console.log(res);
                                                 successNotification(
                                                     "Customer Deleted",
                                                     `${name} was successfully deleted.`

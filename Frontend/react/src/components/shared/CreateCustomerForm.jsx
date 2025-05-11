@@ -40,7 +40,7 @@ const MySelect = ({ label, ...props }) => {
 };
 
 // And now we can use these
-const CreateCustomerForm = ( {fetchCustomers} ) => {
+const CreateCustomerForm = ( {onSuccess} ) => {
     return (
         <>
             <Formik
@@ -48,6 +48,7 @@ const CreateCustomerForm = ( {fetchCustomers} ) => {
                     name: '',
                     email: '',
                     age: 0, // added for our checkbox
+                    password: '',
                     gender: '', // added for our select
                 }}
                 validationSchema={Yup.object({
@@ -64,6 +65,11 @@ const CreateCustomerForm = ( {fetchCustomers} ) => {
                         .max(100, 'Too old!')
                     .required('Required'),
 
+                    password: Yup.string()
+                        .min(4, 'Must be at least 4 characters')
+                        .max(15, 'Must be 15 characters or less')
+                        .required('Required'),
+
                     gender: Yup.string()
                         .oneOf(
                             ['MALE', 'FEMALE'],
@@ -74,12 +80,13 @@ const CreateCustomerForm = ( {fetchCustomers} ) => {
                 onSubmit={(customer, { setSubmitting }) => {
                     setSubmitting(true);
                     saveCustomer(customer)
-                        .then( () => {
+                        .then( (res) => {
+                            console.log(res);
                             successNotification(
                                 "Customer Saved",
                                 `${customer.name} added successfully.`
                             );
-                            fetchCustomers();
+                            onSuccess(res.headers["authorization"]);
                         }).catch(err => {
                             errorNotification(
                                 err.code,
@@ -113,6 +120,13 @@ const CreateCustomerForm = ( {fetchCustomers} ) => {
                                 name="age"
                                 type="number"
                                 placeholder="age"
+                            />
+
+                            <MyTextInput
+                                label="Password"
+                                name="password"
+                                type="password"
+                                placeholder="pick a secure password"
                             />
 
                             <MySelect label="Gender" name="gender">
