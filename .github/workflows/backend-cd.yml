@@ -70,14 +70,10 @@ jobs:
           region: ${{ secrets.EB_REGION }}
           deployment_package: Backend/Dockerrun.aws.json
 
-      - name: Move Dockerrun.aws.json to repo root (if it's outside)
-        run: |
-          mv ../Dockerrun.aws.json ./Dockerrun.aws.json
-
       - name: Commit and Push Dockerrun.aws.json
         run: |
           git config user.name github-actions
           git config user.email github_actions@github.com
           git add Dockerrun.aws.json
-          git commit -m "Update Dockerrun.aws.json docker image with new tag ${{ steps.build-number.outputs.BUILD_NUMBER }}" || echo "No changes to commit"
+          git commit -m "Update Dockerrun.aws.json docker image with new tag ${{steps.build-number.outputs.BUILD_NUMBER}}"
           git push
