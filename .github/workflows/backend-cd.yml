@@ -6,8 +6,8 @@ on:
   push:
     branches:
       - main
-    paths:
-      - Backend/**
+#    paths:
+#      - Backend/**
 
 jobs:
   deploy:
