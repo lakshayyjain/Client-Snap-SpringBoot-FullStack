@@ -3,7 +3,7 @@
   "containerDefinitions": [
     {
       "name": "lakshay-api",
-      "image": "lakshayyjain/lakshayyjain-api:17.05.2025.11.51.23",
+      "image": "lakshayyjain/lakshayyjain-api:17.05.2025.12.33.18",
       "essential": true,
       "memory": 512,
       "portMappings": [
