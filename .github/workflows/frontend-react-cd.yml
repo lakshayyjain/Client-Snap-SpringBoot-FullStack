@@ -1,86 +1,65 @@
-name: CD - Deploy Backend
+name: CD - Deploy React Frontend
 
 on:
   workflow_dispatch:
-
   push:
     branches:
       - main
     paths:
-      - Backend/**
+      - Frontend/react/**
 
 jobs:
   deploy:
     runs-on: ubuntu-latest
-
-    services:
-      postgres:
-        image: postgres
-        env:
-          POSTGRES_USER: postgres
-          POSTGRES_PASSWORD: jainlakshay
-          POSTGRES_DB: customer
-        ports:
-          - 5332:5432
-        options: >-
-          --health-cmd pg_isready
-          --health-interval 10s
-          --health-timeout 5s
-          --health-retries 5
-
     defaults:
       run:
-        working-directory: ./Backend
+        working-directory: ./frontend/react
 
     steps:
       - uses: actions/checkout@v4
       - name: Slack commit message and sha
         run: >
           curl -X POST -H 'Content-type: application/json'
-          --data '{"text":":github: https://github.com/lakshayyjain/Client-Snap-SpringBoot-FullStack/commit/${{ github.sha }} - ${{ github.event.head_commit.message }}"}' 
+          --data '{"text":":github: ${{ github.server_url }}/${{ github.repository }}/commit/${{ github.sha }} - ${{ github.event.head_commit.message }}"}' 
           ${{ secrets.SLACK_WEBHOOK_URL }}
+
       - name: Send Slack Message
         run: >
           curl -X POST -H 'Content-type: application/json'
           --data '{"text":"Deployment started :progress_bar: :fingerscrossed:"}' 
           ${{ secrets.SLACK_WEBHOOK_URL }}
 
-      - uses: actions/setup-java@v4
-        with:
-          distribution: 'temurin'
-          java-version: '17'
-          cache: 'maven'
-
-      - name: Log in to Docker Hub
-        run: echo "${{ secrets.DOCKER_PASSWORD }}" | docker login -u "${{ secrets.DOCKER_USERNAME }}" --password-stdin
-
       - name: Set build number
         id: build-number
         run: echo "BUILD_NUMBER=$(date '+%d.%m.%Y.%H.%M.%S')" >> $GITHUB_OUTPUT
 
-      - name: Send Slack Message
-        run: >
-          curl -X POST -H 'Content-type: application/json'
-          --data '{"text":":maven: Building with Maven"}'
-          ${{ secrets.SLACK_WEBHOOK_URL }}
-      - name: Build Package Push with Maven
-        run: mvn -ntp -B verify -Ddocker.image.tag=${{steps.build-number.outputs.BUILD_NUMBER}} jib:build
+      - name: Log in to Docker Hub
+        run: echo "${{ secrets.DOCKER_PASSWORD }}" | docker login -u "${{ secrets.DOCKER_USERNAME }}" --password-stdin
+
+      - name: Docker Build and push
+        run: |
+          chmod +x ../../.ci/build-publish.sh
+          USERNAME=lakshayyjain \
+          REPO=lakshayjain-react \
+          TAG=${{ steps.build-number.outputs.BUILD_NUMBER }} \
+          ../../.ci/build-publish.sh . \
+            --build-arg api_base_url=http://lakshay-api-env.eba-tqrwbeej.ap-south-1.elasticbeanstalk.com:8080
 
       - name: Send Slack Message
         run: >
           curl -X POST -H 'Content-type: application/json' 
           --data '{"text":":docker: Image tag:${{steps.build-number.outputs.BUILD_NUMBER}} pushed to
-          https://hub.docker.com/repository/docker/lakshayyjain/lakshayyjain-api"}' 
+          https://hub.docker.com/repository/docker/lakshayyjain/lakshayjain-react"}' 
           ${{ secrets.SLACK_WEBHOOK_URL }}
-
+          
       - name: Update Dockerrun.aws.json api image tag with new build number
         run: |
           echo "Dockerrun.aws.json before updating tag"
           cat ../Dockerrun.aws.json
-          sed -i -E 's_(lakshayyjain/lakshayyjain-api:)([^"]*)_\1'${{steps.build-number.outputs.BUILD_NUMBER}}'_' ../Dockerrun.aws.json
+          sed -i -E 's_(lakshayyjain/lakshayjain-react:)([^"]*)_\1'${{steps.build-number.outputs.BUILD_NUMBER}}'_' ../Dockerrun.aws.json
           echo "Dockerrun.aws.json after updating tag"
           cat ../Dockerrun.aws.json
-
+          
       - name: Send Slack Message
         run: >
           curl -X POST -H 'Content-type: application/json' 
@@ -98,6 +77,7 @@ jobs:
           version_description: ${{ github.SHA }}
           region: ${{ secrets.EB_REGION }}
           deployment_package: Dockerrun.aws.json
+          wait_for_environment_recovery: 60
 
       - name: Send Slack Message
         run: >

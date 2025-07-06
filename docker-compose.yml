@@ -25,7 +25,20 @@ services:
       - db
     restart: unless-stopped
     command:
-      - --spring.datasource.url=jdbc:postgresql://db:5432/customer
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://db:5432/customer
+
+  lakshay-react:
+    container_name: lakshay-react
+    image: lakshayyjain/lakshayjain-react
+    build:
+      context: frontend/react
+      args:
+        api_base_url: http://localhost:8088
+    ports:
+      - "3000:5173"
+    depends_on:
+      - lakshay-api
+    restart: unless-stopped
 
 networks:
   db:
